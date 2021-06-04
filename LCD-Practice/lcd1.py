@@ -1,20 +1,18 @@
-#!/usr/bin/env python3
+import i2clcd
 
-import LCD1602
-import time
+lcd = i2clcd.i2clcd(i2c_bus=1, i2c_addr=0x27, lcd_width=16)
+lcd.init()
 
-def setup():
-    LCD1602.init(0x27, 1)
-    # init(slave address, background light)
-    LCD1602.write(0, 0, 'Hello!')
-    LCD1602.write(1, 1, 'from Rexqualis')
-    time.sleep(2)
+# fill a line by the text
+lcd.print_line('hello', line=0)
+lcd.print_line('world!', line=1, align='RIGHT')
 
-def destroy():
-    LCD1602.clear()
+# print text at the current cursor position
+lcd.move_cursor(1, 0)
+lcd.print('the')
 
-if __name__ == "__main__":
-    try:
-        setup()
-    except KeyboardInterrupt:
-        destroy()
+# custom character
+char_celsius = (0x10, 0x06, 0x09, 0x08, 0x08, 0x09, 0x06, 0x00)
+lcd.write_CGRAM(char_celsius, 0)
+lcd.move_cursor(0, 6)
+lcd.print(b'CGRAM: ' + i2clcd.CGRAM_CHR[0])
